@@ -48,7 +48,7 @@ class ConfusionMatrix(object):
 
         plt.xticks(range(self.num_classes), self.labels, rotation=45)
         plt.yticks(range(self.num_classes), self.labels)
-        plt.colorbar
+        plt.colorbar()
         plt.xlabel("True Labels")
         plt.ylabel("Predicted Labels")
         plt.title("Confusion Matrix")
@@ -101,9 +101,9 @@ if __name__ == "__main__":
     # weight_pth = "../GoogLeNet/GoogleNet.pth"
     # missing_keys, unexpected_keys = net.load_state_dict(torch.load(weight_pth, map_location=device), strict=False)
 
-    net = resnet34(num_classes=5)
+    net = resnet34(num_classes=5).to(device)
     weight_pth = "../ResNet/checkpoints/Trained_ResNet34.pth"
-    net.load_state_dict(torch.load(weight_pth, map_location=device)).to(device)
+    net.load_state_dict(torch.load(weight_pth, map_location=device))
 
     json_label_pth = "./class_indices.json"
     json_file = open(json_label_pth, 'r')
