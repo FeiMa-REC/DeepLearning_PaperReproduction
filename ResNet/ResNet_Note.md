@@ -14,14 +14,14 @@
 
 如下图所示，当单纯的通过堆叠卷积层和池化层加深网络，我们可以发现其效果没有浅层网络好。
 
-![Alt text](/NoteImgs/1.png)
+![](./NoteImgs/1.png)
 
 而对于上诉两个问题，ResNet论文中给出了两个解决方法：
 >对于梯度消失或梯度爆炸问题，ResNet论文提出通过数据的预处理以及在网络中使用 BN（Batch Normalization）层来解决。
 
 >对于退化问题，ResNet论文提出了 residual结构（残差结构）来减轻退化问题，下图是使用residual结构的卷积网络，可以看到随着网络的不断加深，效果并没有变差，而是变的更好了。（虚线是train error，实线是test error）
 
-![Alt text](/NoteImgs/2.png)
+![](./NoteImgs/2.png)
 
 ### 残差结构
 
@@ -29,21 +29,21 @@
 
 下图中左侧残差结构称为 BasicBlock(适用于浅层网络)，右侧残差结构称为 Bottleneck(适用于深层网络)：
 
-![Alt text](/NoteImgs/3.png)
+![](./NoteImgs/3.png)
 
 **对于深层的 Bottleneck，1×1的卷积核起到降维和升维（特征矩阵深度）的作用，同时可以大大减少网络参数。**
 
-![Alt text](/NoteImgs/4.png)
+![](./NoteImgs/4.png)
 
 观察下图的 ResNet18层网络，可以发现有些残差块的 short cut 是实线的，而有些则是虚线的。
 
 这些虚线的 short cut 上通过1×1的卷积核进行了维度处理（特征矩阵在长宽方向降采样，深度方向调整成下一层残差结构所需要的channel）。
 
-![Alt text](/NoteImgs/5.png)
+![](./NoteImgs/5.png)
 
 下图是原论文给出的不同深度的ResNet网络结构配置，注意表中的残差结构给出了主分支上卷积核的大小与卷积核个数，表中 残差块×N 表示将该残差结构重复N次。
 
-![Alt text](/NoteImgs/6.png)
+![](./NoteImgs/6.png)
 
 原文的表注中已说明，**conv3_x, conv4_x, conv5_x所对应的一系列残差结构的第一层残差结构都是虚线残差结构**。因为这一系列残差结构的第一层都有调整输入特征矩阵shape的使命（将特征矩阵的高和宽缩减为原来的一半，将深度channel调整成下一层残差结构所需要的channel）
 
