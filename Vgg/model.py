@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torchsummary import summary
 
 # official pretrain weights
 model_urls = {
@@ -75,3 +76,9 @@ def vgg(model_name="vgg16", **kwargs):
 
     model = VGG(make_features(cfg), **kwargs)
     return model
+
+
+# if __name__ == "__main__":
+#     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+#     net = vgg("vgg16", num_classes=5, init_weights=True).to(device)
+#     summary(net, (3, 224, 224))
