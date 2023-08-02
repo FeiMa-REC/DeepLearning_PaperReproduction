@@ -5,7 +5,8 @@ import os
 import json
 from prettytable import PrettyTable
 from torchvision import transforms, datasets
-from GoogLeNet.Model import GoogleNet
+# from GoogLeNet.Model import GoogleNet
+from ResNet.model import resnet34
 
 
 class ConfusionMatrix(object):
@@ -67,20 +68,28 @@ class ConfusionMatrix(object):
 
 if __name__ == "__main__":
     '''
-        此处使用GoogLeNet作为示例：保存验证集前处理阶段相同
+        此处使用GoogLeNet和ResNet作为示例：保存验证集前处理阶段相同
     '''
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("using {} for training.".format(device))
 
-    data_transform = transforms.Compose([
-        transforms.Resize((224, 224)),
+    # GoogLeNet_data_transform = transforms.Compose([
+    #     transforms.Resize((224, 224)),
+    #     transforms.ToTensor(),
+    #     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+    # ])
+
+    ResNet_data_transform = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
         transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+        transforms.Normalize([0.485, 0.456, 0.406],
+                             [0.229, 0.224, 0.225])
     ])
 
     data_root = "D:/BaiduNetdiskDownload/DataSets/flower_data"
     val_dataset = datasets.ImageFolder(os.path.join(data_root, "val"),
-                                       transform=data_transform)
+                                       transform=ResNet_data_transform)
     batch_size = 32
     num_workers = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])
     val_loader = torch.utils.data.DataLoader(val_dataset,
@@ -88,10 +97,13 @@ if __name__ == "__main__":
                                              shuffle=True,
                                              num_workers=num_workers)
 
-    # net = ResNet34(num_classes=5)
-    net = GoogleNet(num_classes=5, aux_logits=False).to(device)
-    weight_pth = "../GoogLeNet/GoogleNet.pth"
-    missing_keys, unexpected_keys = net.load_state_dict(torch.load(weight_pth, map_location=device), strict=False)
+    # net = GoogleNet(num_classes=5, aux_logits=False).to(device)
+    # weight_pth = "../GoogLeNet/GoogleNet.pth"
+    # missing_keys, unexpected_keys = net.load_state_dict(torch.load(weight_pth, map_location=device), strict=False)
+
+    net = resnet34(num_classes=5)
+    weight_pth = "../ResNet/checkpoints/Trained_ResNet34.pth"
+    net.load_state_dict(torch.load(weight_pth, map_location=device)).to(device)
 
     json_label_pth = "./class_indices.json"
     json_file = open(json_label_pth, 'r')

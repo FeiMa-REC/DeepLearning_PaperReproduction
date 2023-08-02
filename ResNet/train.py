@@ -4,10 +4,10 @@ import json
 import torch.nn as nn
 
 from torchvision import datasets, transforms
-from model import ResNet34
+from model import resnet34
 
 
-def main(batch_size=32, epochs=3):
+def main(batch_size=32, epochs=2):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("using {} for training.".format(device))
 
@@ -59,12 +59,11 @@ def main(batch_size=32, epochs=3):
                                              num_workers=num_workers)
 
     # 此时由于迁移训练使用官方的预训练参数，因此暂时不指定num_classes
-    net = ResNet34()
+    net = resnet34()
     resnet34_weight_path = './model_hub/resnet34.pth'
     assert os.path.exists(resnet34_weight_path), "file {} does not exist.".format(resnet34_weight_path)
     # net.load_state_dict(torch.load(resnet34_weight_path, map_location='cpu'))
     missing_keys, unexpected_keys = net.load_state_dict(torch.load(resnet34_weight_path, map_location='cpu'), strict=False)
-    # change fc layer structure
     in_channel = net.fc.in_features
     net.fc = nn.Linear(in_channel, 5)
     net.to(device)
@@ -133,5 +132,5 @@ def main(batch_size=32, epochs=3):
 
 if __name__ == "__main__":
     batch_size = 32
-    epochs = 5
+    epochs = 2
     main(batch_size, epochs)

@@ -4,7 +4,7 @@ import json
 import matplotlib.pyplot as plt
 from torchvision import transforms
 from PIL import Image
-from model import ResNet34
+from model import resnet34
 
 
 def main():
@@ -32,7 +32,7 @@ def main():
     with open(json_path, "r") as f:
         class_indict = json.load(f)
 
-    model = ResNet34(num_classes=5).to(device)
+    model = resnet34(num_classes=5).to(device)
     weight_path = './SaveModels/Trained_ResNet34.pth'
     model.load_state_dict(torch.load(weight_path, map_location=device))
 
