@@ -46,7 +46,7 @@ class InvertedResidual(nn.Module):
             nn.Conv2d(hidden_channel, out_channel, kernel_size=1, bias=False),
             nn.BatchNorm2d(out_channel),
         ])
-
+        # 参考pytorch官方的实现，此处命名为conv，不然在train中使用预训练权重会对不上key
         self.conv = nn.Sequential(*layers)
 
     def forward(self, x):
@@ -77,7 +77,7 @@ class MobileNetV2(nn.Module):
         features = []
         # conv1 layer
         features.append(ConvBNReLU(3, input_channel, stride=2))
-        # building inverted residual residual blockes
+        # building inverted residual blockes
         for t, c, n, s in inverted_residual_setting:
             output_channel = _make_divisible(c * alpha, round_nearest)
             for i in range(n):
