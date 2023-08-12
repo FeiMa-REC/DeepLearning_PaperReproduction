@@ -4,14 +4,15 @@ import json
 import torch.nn as nn
 from torchvision import datasets, transforms
 from torch.utils.tensorboard import SummaryWriter
-from model import MobileNetV2
+# from model import MobileNetV2
+from modelV3 import MobileNetV3_large, MobileNetV3_small
 
 
 def main(batch_size=32, epochs=2):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("using {} for training.".format(device))
     # 添加可视化
-    writer = SummaryWriter('./logs')
+    writer = SummaryWriter('logs')
 
     data_transform = {
         "train": transforms.Compose([
@@ -60,13 +61,21 @@ def main(batch_size=32, epochs=2):
                                              shuffle=True,
                                              num_workers=num_workers)
 
-    net = MobileNetV2(num_classes=5)
-    weight_pth = './ModelHub/mobilenet_v2.pth'
+    # net = MobileNetV2(num_classes=5)
+    # weight_pth = './ModelHub/mobilenet_v2.pth'
+    # pre_weights = torch.load(weight_pth)
+    # pre_dict = {k: v for k, v in pre_weights.items() if "classifier" not in k}
+    # missing_keys, unexpected_keys = net.load_state_dict(pre_dict, strict=False)
+    #
+    # # 冻结feature，只训练分类层
+    # for param in net.features.parameters():
+    #     param.requires_grad = False
+
+    net = MobileNetV3_small(num_classes=5)
+    weight_pth = "./ModelHub/mobilenet_v3_small-047dcff4.pth"
     pre_weights = torch.load(weight_pth)
     pre_dict = {k: v for k, v in pre_weights.items() if "classifier" not in k}
     missing_keys, unexpected_keys = net.load_state_dict(pre_dict, strict=False)
-
-    # freeze features weights
     for param in net.features.parameters():
         param.requires_grad = False
 
@@ -130,8 +139,8 @@ def main(batch_size=32, epochs=2):
 
         if val_accurate > best_acc:
             best_acc = val_accurate
-            torch.save(net.state_dict(), f="./checkpoints/Trained_MobileNetV2_{}.pth".format(epoch+1))
-            print("models had save in ./checkpoints/Trained_MobileNetV2_{}.pth".format(epoch + 1))
+            torch.save(net.state_dict(), f="./checkpoints/Trained_MobileNetV3_small_{}.pth".format(epoch + 1))
+            print("models had save in ./checkpoints/Trained_MobileNetV3_Large_small{}.pth".format(epoch + 1))
 
     writer.close()
     print("Finished Training.")
