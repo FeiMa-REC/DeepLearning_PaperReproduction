@@ -1,0 +1,8 @@
+{
+  "ore carrier": 1,
+  "passenger ship": 2,
+  "container ship": 3,
+  "bulk cargo carrier": 4,
+  "general cargo ship": 5,
+  "fishing boat": 6
+}
