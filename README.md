@@ -1,4 +1,3 @@
-# The English introduction is as follows
 ## DeepLearning_PaperReproduction
 This repository is used to preserve the reproduction of papers in the field of DeepLearning.
 
@@ -9,7 +8,7 @@ The main reference `pytorch` official implementation source code and the origina
 
 --- 
 
-# 中文介绍如下
+**中文介绍如下**
 ## 深度学习论文复现
 这个仓库用于记录本人对深度学习领域经典论文的复现过程。
 
