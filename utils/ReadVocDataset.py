@@ -190,45 +190,45 @@ class VOCDataSet(Dataset):
         return tuple(zip(*batch))
 
 
-if __name__ == "__main__":
-    import transforms
-    from draw import draw_objs
-    import matplotlib.pyplot as plt
-    import torchvision.transforms as ts
-    import random
-    import numpy as np
-
-    # read class_indict
-    category_index = {}
-    try:
-        json_file = open('./VOC_Classes.json', 'r')
-        class_dict = json.load(json_file)
-        category_index = {str(v): str(k) for k, v in class_dict.items()}
-    except Exception as e:
-        print(e)
-        exit(-1)
-
-    data_transform = {
-        "train": transforms.Compose([transforms.ToTensor(),
-                                     transforms.RandomHorizontalFlip(0.5)]),
-        "val": transforms.Compose([transforms.ToTensor()])
-    }
-
-    # load train data set
-    VOCRoot = "D:/BaiduNetdiskDownload/DataSets/seaships"
-    train_data_set = VOCDataSet(VOCRoot, data_transform["train"], "train.txt")
-    print(len(train_data_set))
-    for index in random.sample(range(0, len(train_data_set)), k=5):
-        img, target = train_data_set[index]
-        img = ts.ToPILImage()(img)
-        plot_img = draw_objs(img,
-                             target["boxes"].numpy(),
-                             target["labels"].numpy(),
-                             np.ones(target["labels"].shape[0]),
-                             category_index=category_index,
-                             box_thresh=0.5,
-                             line_thickness=5,
-                             font='arial.ttf',
-                             font_size=24)
-        plt.imshow(plot_img)
-        plt.show()
+# if __name__ == "__main__":
+#     import transforms
+#     from draw import draw_objs
+#     import matplotlib.pyplot as plt
+#     import torchvision.transforms as ts
+#     import random
+#     import numpy as np
+#
+#     # read class_indict
+#     category_index = {}
+#     try:
+#         json_file = open('./VOC_Classes.json', 'r')
+#         class_dict = json.load(json_file)
+#         category_index = {str(v): str(k) for k, v in class_dict.items()}
+#     except Exception as e:
+#         print(e)
+#         exit(-1)
+#
+#     data_transform = {
+#         "train": transforms.Compose([transforms.ToTensor(),
+#                                      transforms.RandomHorizontalFlip(0.5)]),
+#         "val": transforms.Compose([transforms.ToTensor()])
+#     }
+#
+#     # load train data set
+#     VOCRoot = "D:/BaiduNetdiskDownload/DataSets/seaships"
+#     train_data_set = VOCDataSet(VOCRoot, data_transform["train"], "train.txt")
+#     print(len(train_data_set))
+#     for index in random.sample(range(0, len(train_data_set)), k=5):
+#         img, target = train_data_set[index]
+#         img = ts.ToPILImage()(img)
+#         plot_img = draw_objs(img,
+#                              target["boxes"].numpy(),
+#                              target["labels"].numpy(),
+#                              np.ones(target["labels"].shape[0]),
+#                              category_index=category_index,
+#                              box_thresh=0.5,
+#                              line_thickness=5,
+#                              font='arial.ttf',
+#                              font_size=24)
+#         plt.imshow(plot_img)
+#         plt.show()
