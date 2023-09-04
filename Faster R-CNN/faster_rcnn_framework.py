@@ -24,6 +24,7 @@ class GeneralizedRCNN(nn.Module):
           transform (nn.Module): performs the data transformation from the inputs to feed into
               the model
     """
+
     def __init__(self, backbone, rpn, roi_heads, transform):
         super(GeneralizedRCNN, self).__init__()
         self.transform = transform
@@ -61,11 +62,15 @@ class GeneralizedRCNN(nn.Module):
                 boxes = target["boxes"]
                 if isinstance(boxes, torch.Tensor):
                     if len(boxes.shape) != 2 or boxes.shape[-1] != 4:
-                        raise ValueError("Expected target boxes to be a tensor"
-                                         "of shape [N, 4], got{:}.".format(boxes.shape))
+                        raise ValueError(
+                            "Expected target boxes to be a tensor"
+                            "of shape [N, 4], got{:}.".format(boxes.shape)
+                        )
                     else:
-                        raise ValueError("Expected target boxes to be of type "
-                                         "Tensor, got{:}.".format(type(boxes)))
+                        raise ValueError(
+                            "Expected target boxes to be of type "
+                            "Tensor, got{:}.".format(type(boxes))
+                        )
 
         original_image_sizes = torch.jit.annotate(List[Tuple[int, int]], [])
         for img in images:
@@ -77,7 +82,7 @@ class GeneralizedRCNN(nn.Module):
 
         features = self.backbone(images.tensors)
         if isinstance(features, torch.Tensor):  # 若只在一层特征层上预测，将feature放入有序字典中，并编号为‘0’
-            features = OrderedDict([('0', features)])  # 若在多层特征层上预测，传入的就是一个有序字典
+            features = OrderedDict([("0", features)])  # 若在多层特征层上预测，传入的就是一个有序字典
 
         # 将特征层以及标注target信息传入rpn中
         # proposals: List[Tensor], Tensor_shape: [num_proposals, 4],
@@ -85,10 +90,14 @@ class GeneralizedRCNN(nn.Module):
         proposals, proposal_losses = self.rpn(images, features, targets)
 
         # 将rpn生成的数据以及标注target传入fast rcnn的后半部分
-        detections, detector_losses = self.roi_heads(features, proposals, images.image_sizes, targets)
+        detections, detector_losses = self.roi_heads(
+            features, proposals, images.image_sizes, targets
+        )
 
         # 对网络的预测结果进行后处理（主要将bboxes还原到原图像尺度上）
-        detections = self.transform.postprocess(detections, images.image_sizes, original_image_sizes)
+        detections = self.transform.postprocess(
+            detections, images.image_sizes, original_image_sizes
+        )
 
         losses = {}
         losses.update(detector_losses)
@@ -96,7 +105,9 @@ class GeneralizedRCNN(nn.Module):
 
         if torch.jit.is_scripting():
             if not self._has_warned:
-                warnings.warn("RCNN always returns a (Losses, Detections) tuple in scripting")
+                warnings.warn(
+                    "RCNN always returns a (Losses, Detections) tuple in scripting"
+                )
                 self._has_warned = True
             return losses, detections
         else:
