@@ -39,7 +39,8 @@ def _resize_image(image, self_min_size, self_max_size):
     # bilinear只支持4D Tensor
     image = torch.nn.functional.interpolate(
         image[None], scale_factor=scale_factor, mode="bilinear", recompute_scale_factor=True,
-        align_corners=False)[0]
+        align_corners=False
+        )[0] # 【0】以切片的形式用于将[1, C, H, W] -> [C, H, W]
 
     return image
 
@@ -60,11 +61,11 @@ class GeneralizedRCNNTransform(nn.Module):
         super(GeneralizedRCNNTransform, self).__init__()
         if not isinstance(min_size, (list, tuple)):
             min_size = (min_size, )
-        self.min_size = min_size
-        self.max_size = max_size
+        self.min_size = min_size    # 指定图像的最小边长
+        self.max_size = max_size    # 指定图像的最大变长
         self.image_mean = image_mean
         self.image_std = image_std
-
+        
     def normalized(self, image):
         dtype, device = image.dtype, image.device
         mean = torch.as_tensor(self.image_mean, dtype=dtype, device=device)
@@ -108,7 +109,7 @@ class GeneralizedRCNNTransform(nn.Module):
         else:
             image = _resize_image(image, size, float(self.max_size))
 
-        if target is None:
+        if target is None: # 验证模式没有target
             return image, target
 
         bbox = target["boxes"]
@@ -186,7 +187,7 @@ class GeneralizedRCNNTransform(nn.Module):
         for img, pad_img in zip(images, batched_imgs):
             # 将输入images中的每张图片复制到新的batched_imgs的每张图片中，对齐左上角，保证bboxes的坐标不变
             # 这样保证输入到网络中一个batch的每张图片的shape相同
-            # copy_: Copies the elements from src into self tensor and returns self
+            # copy_: 此操作将img的值复制到batched_img中，并且batched_img的梯度操作会累加到原img的tensor属性中
             pad_img[: img.shape[0], : img.shape[1], : img.shape[2]].copy_(img)
 
         return batched_imgs
@@ -246,7 +247,7 @@ class GeneralizedRCNNTransform(nn.Module):
             if targets is not None and target_index is not None:
                 targets[i] = target_index
 
-        # 记录resize后的图像尺寸
+        # 记录resize后的图像尺寸 此时图像大小还是不一样的
         image_sizes = [img.shape[-2:] for img in images]
         images = self.batch_images(images)  # 将images打包成一个batch
         image_sizes_list = torch.jit.annotate(List[Tuple[int, int]], [])

@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from torchvision.ops import MultiScaleRoIAlign
 
 # from .roi_head import RoIHeads
-# from .transform import GeneralizedRCNNTransform
+from .transform import GeneralizedRCNNTransform
 # from .rpn_function import AnchorsGenerator, RPNHead, RegionProposalNetwork
 
 
